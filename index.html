@@ -1,0 +1,131 @@
+<!DOCTYPE HTML>
+<html onkeydown = "moveTangible(event, player);">
+	<head>
+		<title>Tangible Tester</title>
+		<style>
+			body
+			{
+				background-image:url('bground.png');
+				background-repeat:no-repeat;
+			}
+
+			img 
+			{
+				position:absolute;
+			}
+		</style>
+		
+		<script type = "text/javascript" src = "tangible.js"></script>
+		<script type = "text/javascript">
+			//Constants
+			var LEFT = 37, UP = 38, RIGHT = 39, DOWN = 40;
+			var LEFT_BOUND = 0, TOP_BOUND = 0, RIGHT_BOUND = 1024, BOTTOM_BOUND = 768;
+
+			//Global Variables
+			var tangibles = new Array();				//All tangibles go into this array.
+			var tangibleImages = new Array();			//All tangible images go into this array.
+			
+			/*
+				Initialize
+				
+				Builds all of the tangibles in the game.
+			*/
+			function initialize()
+			{
+				player = new Tangible(100, 100, 12, 28, LEFT_BOUND, TOP_BOUND, RIGHT_BOUND, BOTTOM_BOUND);
+				tangibles.push(player);
+				placeTangible(player, "robber.png");
+				
+				skellington = new Tangible(200, 200, 12, 28, LEFT_BOUND, TOP_BOUND, RIGHT_BOUND, BOTTOM_BOUND) ;
+				tangibles.push(skellington) ;
+				placeTangible(skellington, "skeleton.png") ;
+
+				display();
+			}
+			
+			/*
+				placeTangible
+				
+				Creates the image for a tangible and puts into the images array and into the body.a
+			*/
+			function placeTangible(t, imageFile)
+			{
+				tImg = document.createElement("img");
+				tImg.src = imageFile;
+				tImg.tangible = t;
+				tangibleImages.push(tImg);
+				document.body.appendChild(tImg);
+			}
+			
+			/*
+				moveTangible
+				
+				Moves a specified tangible based on a key event.
+			*/
+			function moveTangible(e, t)
+			{
+				if (e.which)
+					key = e.which;
+				else
+					key = e.keyCode;
+					
+				var dx = 0;
+				var dy = 0;				
+					
+				if (key == LEFT)
+				{
+					dx = -5;
+				}
+
+				if (key == UP)
+				{
+					dy = -5;
+				}
+
+				if (key == RIGHT)
+				{
+					dx = 5;
+				}
+
+				if (key == DOWN)
+				{
+					dy = 5;
+				}
+				
+				t.move(dx, dy);
+				
+				for (var i = 0; i < tangibles.length; i++)
+				{
+					if (t === tangibles[i])
+					{
+						continue;
+					}
+					
+					if (t.hasCollision(tangibles[i]))
+					{
+						dx *= -1;
+						dy *= -1;
+						t.move(dx, dy);
+						break;
+					}
+				}
+				
+				display();
+			}
+			
+			function display()
+			{
+				for (var i = 0; i < tangibleImages.length; i++)
+				{
+					t = tangibleImages[i].tangible;
+					tangibleImages[i].style.left = t.xCoord + "px";
+					tangibleImages[i].style.top = t.yCoord + "px";
+				}
+			}
+		</script>
+		
+	</head>
+		
+	<body onload = "initialize();">
+	</body>
+</html>
